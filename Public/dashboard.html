@@ -26,15 +26,15 @@
             <h2>Tambah Produk</h2>
             <!-- Form Tambah Produk (Dipindahkan ke sini) -->
             <form id="productForm">
-                <input type="text" id="productName" placeholder="Nama Produk" required>
+                <input type="text" id="productName" name="nama" placeholder="Nama Produk" required>
                 <label for="productImage">Gambar Utama:</label>
-                <input type="file" id="productImage" accept="image/*" required>
-                <input type="text" id="productSpecs" placeholder="Spesifikasi" required>
-                <input type="text" id="productPrice" placeholder="Harga" required>
-                <input type="text" id="productStatus" placeholder="Status (New/Second)" required>
-                <textarea id="productDescription" placeholder="Deskripsi" required></textarea>
+                <input type="file" id="productImage" name="gambar" accept="image/*" required>
+                <input type="text" id="productSpecs" name="spesifikasi" placeholder="Spesifikasi" required>
+                <input type="text" id="productPrice" name="harga" placeholder="Harga" required>
+                <input type="text" id="productStatus" name="status" placeholder="Status (New/Second)" required>
+                <textarea id="productDescription" name="deskripsi" placeholder="Deskripsi" required></textarea>
                 <label for="additionalImages">Gambar Tambahan:</label>
-                <input type="file" id="additionalImages" accept="image/*" multiple>
+                <input type="file" id="additionalImages" name="gambarTambahan" accept="image/*" multiple>
                 <button type="submit">Tambah Produk</button>
             </form>
         </div>
@@ -61,15 +61,15 @@
             <h2>Edit Produk</h2>
             <!-- Form Edit Produk -->
             <form id="editForm">
-                <input type="text" id="editProductName" placeholder="Nama Produk" required>
+                <input type="text" id="editProductName" name="nama" placeholder="Nama Produk" required>
                 <label for="editProductImage">Gambar Utama:</label>
-                <input type="file" id="editProductImage" accept="image/*">
-                <input type="text" id="editProductSpecs" placeholder="Spesifikasi" required>
-                <input type="text" id="editProductPrice" placeholder="Harga" required>
-                <input type="text" id="editProductStatus" placeholder="Status (New/Second)" required>
-                <textarea id="editProductDescription" placeholder="Deskripsi" required></textarea>
+                <input type="file" id="editProductImage" name="gambar" accept="image/*">
+                <input type="text" id="editProductSpecs" name="spesifikasi" placeholder="Spesifikasi" required>
+                <input type="text" id="editProductPrice" name="harga" placeholder="Harga" required>
+                <input type="text" id="editProductStatus" name="status" placeholder="Status (New/Second)" required>
+                <textarea id="editProductDescription" name="deskripsi" placeholder="Deskripsi" required></textarea>
                 <label for="editAdditionalImages">Gambar Tambahan:</label>
-                <input type="file" id="editAdditionalImages" accept="image/*" multiple>
+                <input type="file" id="editAdditionalImages" name="gambarTambahan" accept="image/*" multiple>
                 <button type="submit" class="simpan-perubahan">Simpan Perubahan</button>
                 <button type="button" id="cancelEdit">Batal</button>
             </form>
