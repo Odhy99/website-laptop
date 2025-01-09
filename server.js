@@ -8,6 +8,12 @@ const jwt = require('jsonwebtoken'); // Library untuk membuat token JWT
 const app = express();
 const port = process.env.PORT || 3000;
 
+// Buat folder uploads jika belum ada
+const uploadDir = path.join(__dirname, 'uploads');
+if (!fs.existsSync(uploadDir)) {
+    fs.mkdirSync(uploadDir, { recursive: true });
+}
+
 // Middleware
 app.use(bodyParser.json());
 app.use(cors());
@@ -39,7 +45,7 @@ function authenticateToken(req, res, next) {
         return res.status(401).json({ error: 'Token tidak ditemukan' });
     }
 
-    jwt.verify(token, 'rahasia', (err, user) => {
+    jwt.verify(token, process.env.JWT_SECRET || 'rahasia', (err, user) => {
         if (err) {
             return res.status(403).json({ error: 'Token tidak valid' });
         }
@@ -57,7 +63,7 @@ app.post('/login', (req, res) => {
 
     if (user) {
         // Buat token JWT
-        const token = jwt.sign({ userId: user.id }, 'rahasia', { expiresIn: '1h' }); // Ganti 'rahasia' dengan secret key yang kuat
+        const token = jwt.sign({ userId: user.id }, process.env.JWT_SECRET || 'rahasia', { expiresIn: '1h' }); // Ganti 'rahasia' dengan secret key yang kuat
         res.json({ success: true, token }); // Kirim token ke client
     } else {
         res.status(401).json({ success: false, message: 'Username atau password salah' });
@@ -74,7 +80,10 @@ app.post('/api/upload', upload.single('image'), (req, res) => {
     res.json({ url: imageUrl });
 });
 
-app.use(express.static(path.join(__dirname, 'public'))); // Gunakan path absolut
+// Route untuk root path
+app.get('/', (req, res) => {
+    res.sendFile(path.join(__dirname, 'public', 'index.html'));
+});
 
 let products = []; // Simpan data produk di sini (sementara)
 
@@ -162,7 +171,7 @@ app.put('/api/products/:id', authenticateToken, upload.fields([
             }
 
             // Simpan gambar utama baru
-            const gambarUrl = `http://localhost:3000/uploads/${req.files['gambar'][0].filename}`;
+            const gambarUrl = `${req.protocol}://${req.get('host')}/uploads/${req.files['gambar'][0].filename}`;
             updatedProduct.gambar = gambarUrl; // Update URL gambar utama
             console.log(`Gambar utama baru disimpan: ${gambarUrl}`);
         }
@@ -192,7 +201,7 @@ app.put('/api/products/:id', authenticateToken, upload.fields([
 
             // Simpan gambar tambahan baru
             const gambarTambahanUrls = req.files['gambarTambahan'].map(file => {
-                return `http://localhost:3000/uploads/${file.filename}`;
+                return `${req.protocol}://${req.get('host')}/uploads/${file.filename}`;
             });
             updatedProduct.gambarTambahan = gambarTambahanUrls; // Update URL gambar tambahan
             console.log(`Gambar tambahan baru disimpan: ${gambarTambahanUrls.join(', ')}`);
@@ -221,7 +230,7 @@ app.post('/api/banners', authenticateToken, upload.single('image'), (req, res) =
         return res.status(400).json({ error: 'Tidak ada file yang diupload' });
     }
 
-    const imageUrl = `http://localhost:3000/uploads/${req.file.filename}`; // URL gambar
+    const imageUrl = `${req.protocol}://${req.get('host')}/uploads/${req.file.filename}`; // URL gambar
 
     const newBanner = {
         id: Date.now().toString(), // ID unik
@@ -258,7 +267,6 @@ app.delete('/api/banners/:id', authenticateToken, (req, res) => {
         res.status(404).json({ error: 'Banner tidak ditemukan' });
     }
 });
-
 
 // Proteksi halaman dashboard
 app.get('/dashboard.html', authenticateToken, (req, res) => {
