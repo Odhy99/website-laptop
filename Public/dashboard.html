@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard Produk</title>
+    <link rel="stylesheet" href="styles-dashboard.css">
+    <link rel="icon" type="iamge/x-icon" href="images/icon2.png">
+</head>
+<body>
+    <h1>Dashboard</h1>
+    <div class="search-container">
+        <input type="text" id="searchInput" placeholder="Cari produk..." class="search-input">
+        <button id="searchButton" class="search-button"><i class="fas fa-search"></i>Cari</button>
+    </div>
+
+    <!-- Tombol Tambah Produk -->
+    <button id="showProductForm" class="add-product-button">
+        <i class="fas fa-plus"></i> + Produk
+    </button>
+
+    <!-- Modal untuk Form Tambah Produk -->
+    <div id="productModal" class="modal">
+        <div class="modal-content">
+            <span class="close-modal">&times;</span>
+            <h2>Tambah Produk</h2>
+            <!-- Form Tambah Produk (Dipindahkan ke sini) -->
+            <form id="productForm">
+                <input type="text" id="productName" placeholder="Nama Produk" required>
+                <label for="productImage">Gambar Utama:</label>
+                <input type="file" id="productImage" accept="image/*" required>
+                <input type="text" id="productSpecs" placeholder="Spesifikasi" required>
+                <input type="text" id="productPrice" placeholder="Harga" required>
+                <input type="text" id="productStatus" placeholder="Status (New/Second)" required>
+                <textarea id="productDescription" placeholder="Deskripsi" required></textarea>
+                <label for="additionalImages">Gambar Tambahan:</label>
+                <input type="file" id="additionalImages" accept="image/*" multiple>
+                <button type="submit">Tambah Produk</button>
+            </form>
+        </div>
+    </div>
+    
+    <!-- Modal Konfirmasi Hapus -->
+    <div id="deleteConfirmationModal" class="modal">
+        <div class="modal-content">
+            <span class="close-delete-modal">&times;</span>
+            <h2>Konfirmasi Penghapusan</h2>
+            <p>Apakah Anda yakin ingin menghapus produk ini?</p>
+            <button id="confirmDeleteButton">Ya, Hapus</button>
+            <button id="cancelDeleteButton">Batal</button>
+        </div>
+    </div>
+
+
+    <ul id="productList"></ul>
+
+    <!-- Modal untuk Form Edit Produk -->
+    <div id="editModal" class="modal">
+        <div class="modal-content">
+            <span class="close-edit-modal">&times;</span>
+            <h2>Edit Produk</h2>
+            <!-- Form Edit Produk -->
+            <form id="editForm">
+                <input type="text" id="editProductName" placeholder="Nama Produk" required>
+                <label for="editProductImage">Gambar Utama:</label>
+                <input type="file" id="editProductImage" accept="image/*">
+                <input type="text" id="editProductSpecs" placeholder="Spesifikasi" required>
+                <input type="text" id="editProductPrice" placeholder="Harga" required>
+                <input type="text" id="editProductStatus" placeholder="Status (New/Second)" required>
+                <textarea id="editProductDescription" placeholder="Deskripsi" required></textarea>
+                <label for="editAdditionalImages">Gambar Tambahan:</label>
+                <input type="file" id="editAdditionalImages" accept="image/*" multiple>
+                <button type="submit" class="simpan-perubahan">Simpan Perubahan</button>
+                <button type="button" id="cancelEdit">Batal</button>
+            </form>
+        </div>
+    </div>
+
+    <!-- Modal untuk Form Tambah Banner -->
+    <div id="bannerModal" class="modal">
+        <div class="modal-content">
+            <span class="close-banner-modal">&times;</span>
+            <h2>Tambah Banner Iklan</h2>
+            <form id="bannerForm" enctype="multipart/form-data">
+                <label for="bannerImage">Gambar Banner:</label>
+                <input type="file" id="bannerImage" accept="image/*" required>
+                <input type="text" id="bannerLink" placeholder="Tautan Banner (harus dengan http:// atau https://)" required>
+                <button type="submit">Tambah Banner</button>
+            </form>
+        </div>
+    </div>
+
+    <!-- Tombol Tambah Banner -->
+    <button id="showBannerForm" class="add-banner-button">
+        <i class="fas fa-plus"></i> + Banner
+    </button>
+
+    <!-- Daftar Banner -->
+    <ul id="bannerList"></ul>
+
+    <script src="dashboard.js"></script>
+</body>
+
+</html>

@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Laptop Mahasiswa</title>
+    <link rel="stylesheet" href="styles.css">
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
+    <link rel="icon" type="iamge/x-icon" href="images/icon.png">
+</head>
+<body>
+    <!-- Header -->
+    <header>
+        <div class="logo">
+            <img src="images/lakuin.png" alt="Logo">
+        </div>
+        <nav>
+            <ul>
+                <!-- <li><a href="#">Beranda</a></li> -->
+                <!-- <li><a href="#">Tentang Kami</a></li> -->
+                <!-- <li><a href="#">Kontak</a></li> -->
+                <!-- <li><a href="#">Bantuan</a></li> -->
+            </ul>
+        </nav>
+        <div class="search">
+            <input type="text" id="search-input" placeholder="Cari laptop...">
+            <button id="search-button">Cari</button>
+        </div>
+    </header>
+    
+    <!-- Hero Section -->
+    <section class="hero">
+        <h1>
+            Laptop Murah <span id="dynamic-caption" class="caption">di Tahun 2025.</span>
+        </h1>
+        <p>Disini aja, coba cek dulu siapa tahu jodoh!</p>
+        <a href="#laptop-list" class="cta-button">Lihat Laptop Sekarang</a>
+    </section>
+
+    <!-- Daftar Laptop -->
+    <section class="laptop-list" id="laptop-list">
+        <div class="filter">
+            <select id="filter-brand">
+                <option value="all">Semua Merk</option>
+                <option value="asus">Asus</option>
+                <option value="lenovo">Lenovo</option>
+                <option value="acer">Acer</option>
+            </select>
+            <select id="filter-harga">
+                <option value="all">Semua Harga</option>
+                <option value="2jt">Dibawah 2 Juta</option>
+                <option value="3jt">Dibawah 3 Juta</option>
+                <option value="4jt">Dibawah 4 Juta</option>
+            </select>
+        </div>
+        <div class="laptop-cards" id="laptop-cards">
+            <!-- Contoh Kartu Laptop -->
+        </div>
+    </section>
+        <!-- Pagination -->
+    <div class="pagination">
+        <button id="prev-page">&lt; Prev</button>
+        <div class="page-numbers">
+            <!-- Nomor halaman akan ditambahkan di sini secara dinamis -->
+        </div>
+        <button id="next-page">Next &gt;</button>
+    </div>
+
+        <!-- Banner Iklan -->
+    <div class="banner-container">
+        <div class="banner-slide" id="banner-slide">
+
+        </div>
+    </div>
+
+        <!-- Footer -->
+    <footer>
+        <div class="quick-links">
+            <h4>Tautan Cepat</h4>
+            <ul>
+                <li><a href="#">Beranda</a></li>
+                <!-- <li><a href="#">Tentang Kami</a></li> -->
+                <!-- <li><a href="#contact-info">Kontak</a></li> -->
+                <!-- <li><a href="#">Bantuan</a></li> -->
+            </ul>
+        </div>
+        <div class="contact-info" id="contact-info">
+            <h4>Kontak</h4>
+            <p><a href="mailto:ayodyachandra09@gmail.com">ayodyachandra09@gmail.com</a></p>
+            <p><a href="https://wa.me/+6281234567890" target="_blank">0896-7960-8282</a></p>
+            <!-- <p>Alamat: Jl. Bypass Lombok Tengah, Labulia</p> -->
+        </div>
+        <!-- <div class="social-media">
+            <h4>Ikuti Kami</h4>
+            <a href="#"><img src="facebook.png" alt="Facebook"></a>
+            <a href="#"><img src="instagram.png" alt="Instagram"></a>
+            <a href="#"><img src="twitter.png" alt="Twitter"></a>
+        </div> -->
+    </footer>
+    
+        <!-- Popup Detail Laptop -->
+    <div id="popup" class="popup">
+        <div class="popup-content">
+            <span class="close-popup">&times;</span>
+            <div class="popup-image-container">
+                <img src="" alt="Laptop Image" class="popup-image">
+                <button class="nav-button prev-button">&lt;</button>
+                <button class="nav-button next-button">&gt;</button>
+            </div>
+            <!-- <img src="" alt="Laptop Image" class="popup-image"> -->
+            <p class="popup-status"></p>
+            <h2 class="popup-title"></h2>
+            <p class="popup-specs"></p>
+            <p class="popup-price"></p>
+            <p class="popup-description"></p>
+            <button class="popup-button" data-product="">Tanya langsung</button>
+        </div>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>
