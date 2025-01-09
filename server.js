@@ -17,7 +17,7 @@ if (!fs.existsSync(uploadDir)) {
 // Middleware
 app.use(bodyParser.json());
 app.use(cors());
-app.use(express.static(path.join(__dirname, 'public'))); // Gunakan path absolut
+app.use(express.static(path.join(__dirname, 'Public'))); // Gunakan path absolut
 
 // Konfigurasi multer untuk upload file
 const storage = multer.diskStorage({
