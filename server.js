@@ -11,7 +11,7 @@ const port = process.env.PORT || 3000;
 // Middleware
 app.use(bodyParser.json());
 app.use(cors());
-app.use(express.static(path.join(__dirname, 'public'))); // File statis bisa diakses tanpa proteksi
+app.use(express.static(path.join(__dirname, 'Public'))); // File statis bisa diakses tanpa proteksi
 
 // Konfigurasi Cloudinary
 cloudinary.config({
