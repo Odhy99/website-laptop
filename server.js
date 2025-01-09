@@ -11,7 +11,7 @@ const port = 3000;
 // Middleware
 app.use(bodyParser.json());
 app.use(cors());
-app.use(express.static('public')); // File statis bisa diakses tanpa proteksi
+app.use(express.static(path.join(__dirname, 'public'))); // File statis bisa diakses tanpa proteksi
 
 // Konfigurasi Cloudinary
 cloudinary.config({
@@ -45,6 +45,11 @@ function authenticateToken(req, res, next) {
         next(); // Lanjut ke endpoint berikutnya
     });
 }
+
+// Route untuk halaman utama
+app.get('/', (req, res) => {
+    res.sendFile(path.join(__dirname, 'Public', 'index.html'));
+});
 
 // Endpoint untuk login
 app.post('/login', (req, res) => {
@@ -149,25 +154,27 @@ app.post('/api/banners', authenticateToken, upload.single('image'), async (req, 
     }
 
     try {
-        // Upload gambar ke Cloudinary
-        const result = await cloudinary.uploader.upload(req.file.path, {
-            folder: 'banners' // Folder di Cloudinary untuk menyimpan banner
-        });
+        // Upload gambar ke Cloudinary langsung dari buffer
+        const result = await cloudinary.uploader.upload_stream(
+            { folder: 'banners' }, // Folder di Cloudinary
+            (error, result) => {
+                if (error) {
+                    console.error('Error uploading banner:', error);
+                    return res.status(500).json({ error: 'Gagal mengunggah banner' });
+                }
 
-        // Hapus file sementara setelah diunggah ke Cloudinary
-        const fs = require('fs');
-        fs.unlinkSync(req.file.path);
+                const newBanner = {
+                    id: Date.now().toString(), // ID unik
+                    image: result.secure_url, // URL gambar dari Cloudinary
+                    link: link,
+                };
 
-        const newBanner = {
-            id: Date.now().toString(), // ID unik
-            image: result.secure_url, // URL gambar dari Cloudinary
-            link: link,
-        };
-
-        banners.push(newBanner);
-        res.status(201).json(newBanner);
+                banners.push(newBanner);
+                res.status(201).json(newBanner);
+            }
+        ).end(req.file.buffer); // Gunakan buffer dari file yang diupload
     } catch (error) {
-        console.error('Error uploading banner:', error);
+        console.error('Error:', error);
         res.status(500).json({ error: 'Gagal mengunggah banner' });
     }
 });
