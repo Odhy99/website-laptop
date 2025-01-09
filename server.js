@@ -6,7 +6,7 @@ const path = require('path');
 const jwt = require('jsonwebtoken'); // Library untuk membuat token JWT
 const cloudinary = require('cloudinary').v2; // Library untuk Cloudinary
 const app = express();
-const port = 3000;
+const port = process.env.PORT || 3000;
 
 // Middleware
 app.use(bodyParser.json());
