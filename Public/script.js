@@ -1,9 +1,8 @@
-
 let laptops = []; // Array untuk menyimpan data produk dari backend
-
 let images = []; // Array untuk menyimpan daftar gambar (gambar utama + gambar tambahan)
 let currentImageIndex = 0; // Indeks gambar yang sedang ditampilkan
 
+// Fungsi untuk mengambil data produk dari backend
 function fetchProducts() {
     fetch('/api/products') // Ambil data dari endpoint backend
         .then(response => response.json()) // Ubah respons ke JSON
@@ -54,17 +53,16 @@ document.addEventListener('DOMContentLoaded', function () {
         filterHarga.addEventListener('change', filterLaptops);
     }
 
-
     // Fungsi untuk menutup popup saat mengklik di luar popup
-document.addEventListener('click', function (event) {
-    const popup = document.getElementById('popup');
-    const popupContent = document.querySelector('.popup-content');
+    document.addEventListener('click', function (event) {
+        const popup = document.getElementById('popup');
+        const popupContent = document.querySelector('.popup-content');
 
-    // Cek apakah yang diklik adalah di luar popup (overlay)
-    if (event.target === popup) {
-        closePopup(); // Tutup popup
-    }
-});
+        // Cek apakah yang diklik adalah di luar popup (overlay)
+        if (event.target === popup) {
+            closePopup(); // Tutup popup
+        }
+    });
 
     // Dynamic caption
     const captions = [
@@ -236,29 +234,18 @@ function showPopup(image, title, specs, price, description, imageList, status) {
         redirectToWhatsApp(productName); // Redirect ke WhatsApp
     });
 
-
-    // Simpan daftar gambar dan reset index
-    currentImageIndex = 0;
-
-    // Event listener untuk tombol navigasi gambar
-    const prevButton = popup.querySelector('.prev-button');
-    const nextButton = popup.querySelector('.next-button');
-
-     // Cek apakah ada gambar tambahan
-     if (imageList && imageList.length > 0) {
+    // Cek apakah ada gambar tambahan
+    if (imageList && imageList.length > 0) {
         // Jika ada gambar tambahan, tampilkan tombol navigasi
+        const prevButton = popup.querySelector('.prev-button');
+        const nextButton = popup.querySelector('.next-button');
+
         if (prevButton && nextButton) {
             prevButton.style.display = 'block';
             nextButton.style.display = 'block';
 
             prevButton.addEventListener('click', showPrevImage);
             nextButton.addEventListener('click', showNextImage);
-        }
-    } else {
-        // Jika tidak ada gambar tambahan, sembunyikan tombol navigasi
-        if (prevButton && nextButton) {
-            prevButton.style.display = 'none';
-            nextButton.style.display = 'none';
         }
     }
 
@@ -314,14 +301,11 @@ function closePopup() {
     popup.style.display = 'none';
 }
 
-
-
 // Fungsi untuk menampilkan gambar berikutnya
 function showNextImage() {
     if (currentImageIndex < images.length - 1) {
         currentImageIndex++;
         updatePopupImage();
-
     }
 }
 
@@ -330,7 +314,6 @@ function showPrevImage() {
     if (currentImageIndex > 0) {
         currentImageIndex--;
         updatePopupImage();
-  
     }
 }
 
@@ -452,22 +435,3 @@ function slideBanner(banners) {
 window.onload = () => {
     fetchBanners();
 };
-
-
-let currentBannerIndex = 0;
-
-// Modifikasi fungsi displayBanners
-function displayBanners(banners) {
-    const bannerSlide = document.getElementById('banner-slide');
-    bannerSlide.innerHTML = ''; // Kosongkan konten sebelumnya
-
-    banners.forEach(banner => {
-        const bannerElement = document.createElement('a');
-        bannerElement.href = banner.link;
-        bannerElement.target = '_blank';
-        bannerElement.innerHTML = `<img src="${banner.image}" alt="Banner">`;
-        bannerSlide.appendChild(bannerElement);
-    });
-
-    slideBanner(banners); // Jalankan slider
-}
