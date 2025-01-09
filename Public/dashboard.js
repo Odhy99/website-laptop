@@ -1,17 +1,14 @@
 document.addEventListener('DOMContentLoaded', () => {
     const token = localStorage.getItem('token');
 
-    // Periksa apakah token ada
     if (!token) {
         alert('Anda belum login. Silakan login terlebih dahulu.');
-        window.location.href = '/login.html'; // Redirect ke halaman login
+        window.location.href = '/login.html';
         return;
     }
 
-    // Jika token ada, lanjutkan menampilkan dashboard
-    fetchBanners(); // Panggil fungsi fetchBanners() saat halaman dimuat
+    fetchBanners();
 
-    // Jika token ada, lanjutkan menampilkan dashboard
     fetch('/api/products')
         .then(response => response.json())
         .then(products => {
@@ -21,69 +18,59 @@ document.addEventListener('DOMContentLoaded', () => {
         });
 });
 
-
 document.addEventListener('DOMContentLoaded', () => {
     const productForm = document.getElementById('productForm');
     const productList = document.getElementById('productList');
     const showProductFormButton = document.getElementById('showProductForm');
-    const productModal = document.getElementById('productModal'); // Modal
-    const closeModalButton = document.querySelector('.close-modal'); // Tombol close (x) di modal
+    const productModal = document.getElementById('productModal');
+    const closeModalButton = document.querySelector('.close-modal');
     const searchInput = document.getElementById('searchInput');
     const searchButton = document.getElementById('searchButton');
     const resetSearch = document.getElementById('resetSearch');
 
-    // Inisialisasi variabel untuk banner
     const bannerForm = document.getElementById('bannerForm');
     const bannerList = document.getElementById('bannerList');
     const showBannerFormButton = document.getElementById('showBannerForm');
     const bannerModal = document.getElementById('bannerModal');
     const closeBannerModalButton = document.querySelector('.close-banner-modal');
 
-    // Tampilkan modal saat tombol "Tambah Banner" ditekan
     showBannerFormButton.addEventListener('click', () => {
         bannerModal.style.display = 'block';
     });
 
-    // Sembunyikan modal saat tombol close (x) ditekan
     closeBannerModalButton.addEventListener('click', () => {
         bannerModal.style.display = 'none';
     });
 
-    // Sembunyikan modal saat area di luar modal diklik
     window.addEventListener('click', (e) => {
         if (e.target === bannerModal) {
             bannerModal.style.display = 'none';
         }
     });
 
-    // Fetch dan tampilkan banner dari backend
     fetchBanners();
 
-    // Tambahkan banner baru
     bannerForm.addEventListener('submit', async (e) => {
         e.preventDefault();
 
-        const formData = new FormData(); // Buat objek FormData
-        const bannerImage = document.getElementById('bannerImage').files[0]; // Ambil file gambar
-        const bannerLink = document.getElementById('bannerLink').value; // Ambil tautan banner
+        const formData = new FormData();
+        const bannerImage = document.getElementById('bannerImage').files[0];
+        const bannerLink = document.getElementById('bannerLink').value;
 
-        // Validasi: Pastikan file gambar diupload
         if (!bannerImage) {
             alert('Harap upload gambar banner!');
             return;
         }
 
-        // Tambahkan file dan data ke FormData
-        formData.append('image', bannerImage); // Key 'image' harus sesuai dengan yang diharapkan oleh backend
-        formData.append('link', bannerLink); // Key 'link' untuk tautan banner
+        formData.append('image', bannerImage);
+        formData.append('link', bannerLink);
 
         try {
-            // Kirim data ke backend
             const response = await fetch('/api/banners', {
                 method: 'POST',
-                body: formData, // Kirim FormData, bukan JSON
+                body: formData,
                 headers: {
-                    'Authorization': `Bearer ${localStorage.getItem('token')}`, // Sertakan token JWT
+                    'Authorization': `Bearer ${localStorage.getItem('token')}`,
                 },
             });
 
@@ -102,7 +89,6 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     });
 
-    // Fungsi untuk mengambil dan menampilkan banner
     async function fetchBanners() {
         try {
             const response = await fetch('/api/banners');
@@ -110,24 +96,21 @@ document.addEventListener('DOMContentLoaded', () => {
                 throw new Error('Gagal mengambil data banner');
             }
             const banners = await response.json();
-            displayBanners(banners); // Tampilkan banner
+            displayBanners(banners);
         } catch (error) {
             console.error('Error:', error);
         }
     }
 
-    // Fungsi untuk menampilkan banner ke DOM
     function displayBanners(banners) {
         const bannerList = document.getElementById('bannerList');
-        bannerList.innerHTML = ''; // Kosongkan daftar banner sebelum menambahkan yang baru
+        bannerList.innerHTML = '';
 
         banners.forEach(banner => {
             addBannerToDOM(banner);
         });
     }
 
-
-    // Fungsi untuk menambahkan banner ke DOM
     function addBannerToDOM(banner) {
         const li = document.createElement('li');
         li.innerHTML = `
@@ -136,7 +119,6 @@ document.addEventListener('DOMContentLoaded', () => {
             <button class="delete-banner-btn" data-id="${banner.id}">Hapus</button>
         `;
 
-        // Event listener untuk tombol hapus
         const deleteButton = li.querySelector('.delete-banner-btn');
         if (deleteButton) {
             deleteButton.addEventListener('click', function () {
@@ -147,7 +129,6 @@ document.addEventListener('DOMContentLoaded', () => {
         bannerList.appendChild(li);
     }
 
-    // Fungsi untuk menghapus banner
     async function deleteBanner(bannerId) {
         try {
             const response = await fetch(`/api/banners/${bannerId}`, {
@@ -158,7 +139,6 @@ document.addEventListener('DOMContentLoaded', () => {
             });
 
             if (response.ok) {
-                // Hapus banner dari DOM
                 const bannerElement = document.querySelector(`.delete-banner-btn[data-id="${bannerId}"]`).parentElement;
                 if (bannerElement) {
                     bannerElement.remove();
@@ -173,24 +153,20 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     }
 
-    // Tampilkan modal saat tombol "Tambah Produk" ditekan
     showProductFormButton.addEventListener('click', () => {
-        productModal.style.display = 'block'; // Tampilkan modal
+        productModal.style.display = 'block';
     });
 
-    // Sembunyikan modal saat tombol close (x) ditekan
     closeModalButton.addEventListener('click', () => {
-        productModal.style.display = 'none'; // Sembunyikan modal
+        productModal.style.display = 'none';
     });
 
-    // Sembunyikan modal saat area di luar modal diklik
     window.addEventListener('click', (e) => {
         if (e.target === productModal) {
-            productModal.style.display = 'none'; // Sembunyikan modal
+            productModal.style.display = 'none';
         }
     });
 
-    // Fetch and display products
     fetch('/api/products')
         .then(response => response.json())
         .then(products => {
@@ -199,83 +175,54 @@ document.addEventListener('DOMContentLoaded', () => {
             });
         });
 
-    // Add new product
+    // Integrasi kode baru untuk upload gambar ke Cloudinary
     productForm.addEventListener('submit', async (e) => {
         e.preventDefault();
 
+        // Ambil token dari localStorage
+        const token = localStorage.getItem('token');
+        if (!token) {
+            alert('Anda belum login. Silakan login terlebih dahulu.');
+            window.location.href = '/login.html';
+            return;
+        }
+
         // Ambil data dari form
-        const productName = document.getElementById('productName').value;
-        const productImage = document.getElementById('productImage').files[0]; // File gambar utama
-        const productSpecs = document.getElementById('productSpecs').value;
-        const productPrice = document.getElementById('productPrice').value;
-        const productStatus = document.getElementById('productStatus').value;
-        const productDescription = document.getElementById('productDescription').value;
-        const additionalImages = document.getElementById('additionalImages').files; // File gambar tambahan
+        const name = document.getElementById('productName').value;
+        const description = document.getElementById('productDescription').value;
+        const price = document.getElementById('productPrice').value;
+        const imageFile = document.getElementById('productImage').files[0];
 
-        // Validasi: Pastikan semua field yang diperlukan sudah diisi
-        if (!productName || !productSpecs || !productPrice || !productStatus || !productDescription) {
-            alert('Harap isi semua field yang diperlukan!');
+        // Validasi input
+        if (!name || !description || !price || !imageFile) {
+            alert('Harap isi semua field dan upload gambar.');
             return;
         }
 
-        // Validasi: Pastikan gambar utama diupload
-        if (!productImage) {
-            alert('Harap upload gambar utama!');
-            return;
-        }
+        // Buat FormData untuk mengirim file
+        const formData = new FormData();
+        formData.append('name', name);
+        formData.append('description', description);
+        formData.append('price', price);
+        formData.append('image', imageFile);
 
-        // Upload gambar utama dan gambar tambahan ke server
         try {
-            // Upload gambar utama
-            const mainImageUrl = await uploadImage(productImage);
-
-            // Upload gambar tambahan (jika ada)
-            const additionalImageUrls = [];
-            for (let i = 0; i < additionalImages.length; i++) {
-                const url = await uploadImage(additionalImages[i]);
-                additionalImageUrls.push(url);
-            }
-
-            // Buat objek produk baru
-            const newProduct = {
-                id: Date.now().toString(),
-                nama: productName,
-                gambar: mainImageUrl, // URL gambar utama
-                spesifikasi: productSpecs,
-                harga: productPrice,
-                status: productStatus,
-                deskripsi: productDescription,
-                gambarTambahan: additionalImageUrls, // Array URL gambar tambahan
-            };
-
-            // Ambil token dari localStorage
-            const token = localStorage.getItem('token');
-
-            if (!token) {
-                alert('Anda belum login. Silakan login terlebih dahulu.');
-                window.location.href = '/login.html'; // Redirect ke halaman login
-                return;
-            }
-
-            // Kirim data produk ke backend
+            // Kirim data ke endpoint /api/products
             const response = await fetch('/api/products', {
                 method: 'POST',
                 headers: {
-                    'Content-Type': 'application/json',
-                    'Authorization': `Bearer ${token}` // Sertakan token di header
+                    'Authorization': `Bearer ${token}`
                 },
-                body: JSON.stringify(newProduct),
+                body: formData
             });
 
             if (response.ok) {
-                const product = await response.json();
-                addProductToDOM(product);
-                productForm.reset();
-                productModal.style.display = 'none';
+                alert('Produk berhasil ditambahkan!');
+                window.location.reload(); // Muat ulang halaman setelah berhasil
             } else {
                 const errorData = await response.json();
-                alert(`Gagal menambahkan produk: ${errorData.error || 'Terjadi kesalahan'}`);
-                console.error('Detail error:', errorData); // Log error untuk debugging
+                console.error('Error dari backend:', errorData);
+                alert(`Gagal menambahkan produk: ${errorData.error}`);
             }
         } catch (error) {
             console.error('Error:', error);
@@ -283,7 +230,6 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     });
 
-    // Fungsi untuk upload gambar ke server
     async function uploadImage(file) {
         const formData = new FormData();
         formData.append('image', file);
@@ -295,13 +241,12 @@ document.addEventListener('DOMContentLoaded', () => {
 
         if (response.ok) {
             const data = await response.json();
-            return data.url; // URL gambar yang diupload
+            return data.url;
         } else {
             throw new Error('Gagal mengupload gambar');
         }
     }
 
-    // Fungsi untuk menambahkan produk ke DOM
     function addProductToDOM(product) {
         const li = document.createElement('li');
         li.innerHTML = `
@@ -313,52 +258,46 @@ document.addEventListener('DOMContentLoaded', () => {
             <button class="delete-btn" data-id="${product.id}">Hapus</button>
         `;
 
-        // Event listener untuk tombol hapus
         const deleteButton = li.querySelector('.delete-btn');
         if (deleteButton) {
             deleteButton.addEventListener('click', function () {
-                showDeleteConfirmationModal(product.id); // Tampilkan modal konfirmasi hapus
+                showDeleteConfirmationModal(product.id);
             });
         }
 
-        // Event listener untuk tombol edit
         const editButton = li.querySelector('.edit-btn');
         if (editButton) {
             editButton.addEventListener('click', function () {
-                showEditForm(product); // Panggil fungsi edit
+                showEditForm(product);
             });
         }
 
         productList.appendChild(li);
     }
 
-    // Fungsi untuk menampilkan modal konfirmasi hapus
     function showDeleteConfirmationModal(productId) {
         const deleteModal = document.getElementById('deleteConfirmationModal');
-        deleteModal.style.display = 'block'; // Tampilkan modal
-        productIdToDelete = productId; // Simpan ID produk yang akan dihapus
+        deleteModal.style.display = 'block';
+        productIdToDelete = productId;
     }
 
-    // Fungsi untuk menyembunyikan modal konfirmasi hapus
     function hideDeleteConfirmationModal() {
         const deleteModal = document.getElementById('deleteConfirmationModal');
-        deleteModal.style.display = 'none'; // Sembunyikan modal
-        productIdToDelete = null; // Reset ID produk
+        deleteModal.style.display = 'none';
+        productIdToDelete = null;
     }
 
-    // Event listener untuk tombol "Ya, Hapus"
     document.getElementById('confirmDeleteButton').addEventListener('click', async () => {
         if (productIdToDelete) {
             try {
                 const response = await fetch(`/api/products/${productIdToDelete}`, {
                     method: 'DELETE',
                     headers: {
-                        'Authorization': `Bearer ${localStorage.getItem('token')}` // Sertakan token di header
+                        'Authorization': `Bearer ${localStorage.getItem('token')}`
                     },
                 });
 
                 if (response.ok) {
-                    // Hapus produk dari DOM
                     const productElement = document.querySelector(`.delete-btn[data-id="${productIdToDelete}"]`).parentElement;
                     if (productElement) {
                         productElement.remove();
@@ -376,87 +315,72 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     });
 
-    // Event listener untuk tombol "Batal"
     document.getElementById('cancelDeleteButton').addEventListener('click', () => {
-        hideDeleteConfirmationModal(); // Sembunyikan modal
+        hideDeleteConfirmationModal();
     });
 
-    // Event listener untuk tombol close (x) di modal
     document.querySelector('.close-delete-modal').addEventListener('click', () => {
-        hideDeleteConfirmationModal(); // Sembunyikan modal
+        hideDeleteConfirmationModal();
     });
 
-    // Event listener untuk area di luar modal
     window.addEventListener('click', (e) => {
         const deleteModal = document.getElementById('deleteConfirmationModal');
         if (e.target === deleteModal) {
-            hideDeleteConfirmationModal(); // Sembunyikan modal
+            hideDeleteConfirmationModal();
         }
     });
 
-    // Fungsi untuk menampilkan form edit dalam modal
     function showEditForm(product) {
-        const editModal = document.getElementById('editModal'); // Modal edit
-        const editForm = document.getElementById('editForm'); // Form edit
-        const closeEditModalButton = document.querySelector('.close-edit-modal'); // Tombol close (x) di modal edit
+        const editModal = document.getElementById('editModal');
+        const editForm = document.getElementById('editForm');
+        const closeEditModalButton = document.querySelector('.close-edit-modal');
 
-        // Isi form dengan data produk yang akan diedit
         document.getElementById('editProductName').value = product.nama;
         document.getElementById('editProductSpecs').value = product.spesifikasi;
         document.getElementById('editProductPrice').value = product.harga;
         document.getElementById('editProductStatus').value = product.status;
         document.getElementById('editProductDescription').value = product.deskripsi;
 
-         // Nonaktifkan input file untuk gambar utama dan gambar tambahan
         document.getElementById('editProductImage').disabled = true;
         document.getElementById('editAdditionalImages').disabled = true;
 
-        // Sembunyikan input file untuk gambar utama dan gambar tambahan
         document.getElementById('editProductImage').style.display = 'none';
         document.getElementById('editAdditionalImages').style.display = 'none';
 
-        // Sembunyikan label untuk gambar utama dan gambar tambahan
         const editProductImageLabel = document.querySelector('label[for="editProductImage"]');
         const editAdditionalImagesLabel = document.querySelector('label[for="editAdditionalImages"]');
         if (editProductImageLabel) editProductImageLabel.style.display = 'none';
         if (editAdditionalImagesLabel) editAdditionalImagesLabel.style.display = 'none';
 
-        // Tampilkan modal edit
         editModal.style.display = 'block';
 
-        // Event listener untuk form edit
         editForm.addEventListener('submit', function (e) {
             e.preventDefault();
-            updateProduct(product.id); // Panggil fungsi update
+            updateProduct(product.id);
         });
 
-        // Event listener untuk tombol batal
         const cancelEditButton = document.getElementById('cancelEdit');
         if (cancelEditButton) {
             cancelEditButton.addEventListener('click', function () {
-                editModal.style.display = 'none'; // Sembunyikan modal edit
+                editModal.style.display = 'none';
             });
         }
 
-        // Sembunyikan modal saat tombol close (x) ditekan
         closeEditModalButton.addEventListener('click', () => {
-            editModal.style.display = 'none'; // Sembunyikan modal edit
+            editModal.style.display = 'none';
         });
 
-        // Sembunyikan modal saat area di luar modal diklik
         window.addEventListener('click', (e) => {
             if (e.target === editModal) {
-                editModal.style.display = 'none'; // Sembunyikan modal edit
+                editModal.style.display = 'none';
             }
         });
     }
 
-    // Fungsi untuk mengupdate produk
     async function updateProduct(productId) {
         const editModal = document.getElementById('editModal');
         const editForm = document.getElementById('editForm');
 
-        // Ambil data dari form edit
         const formData = new FormData();
         formData.append('nama', document.getElementById('editProductName').value);
         formData.append('spesifikasi', document.getElementById('editProductSpecs').value);
@@ -464,24 +388,21 @@ document.addEventListener('DOMContentLoaded', () => {
         formData.append('status', document.getElementById('editProductStatus').value);
         formData.append('deskripsi', document.getElementById('editProductDescription').value);
 
-        // Ambil file foto utama jika ada
         const mainImageFile = document.getElementById('editProductImage').files[0];
         if (mainImageFile) {
             formData.append('gambar', mainImageFile);
         }
 
-        // Ambil file foto tambahan jika ada
         const additionalImageFiles = document.getElementById('editAdditionalImages').files;
         for (let i = 0; i < additionalImageFiles.length; i++) {
             formData.append('gambarTambahan', additionalImageFiles[i]);
         }
 
         try {
-            // Kirim permintaan PUT ke backend
             const response = await fetch(`/api/products/${productId}`, {
                 method: 'PUT',
                 headers: {
-                    'Authorization': `Bearer ${localStorage.getItem('token')}` // Sertakan token di header
+                    'Authorization': `Bearer ${localStorage.getItem('token')}`
                 },
                 body: formData,
             });
@@ -489,7 +410,6 @@ document.addEventListener('DOMContentLoaded', () => {
             if (response.ok) {
                 const updatedProductData = await response.json();
 
-                // Perbarui produk di DOM
                 const productElement = document.querySelector(`.edit-btn[data-id="${productId}"]`).parentElement;
                 if (productElement) {
                     productElement.innerHTML = `
@@ -501,7 +421,6 @@ document.addEventListener('DOMContentLoaded', () => {
                         <button class="delete-btn" data-id="${updatedProductData.id}">Hapus</button>
                     `;
 
-                    // Pasang ulang event listener untuk tombol edit dan hapus
                     const editButton = productElement.querySelector('.edit-btn');
                     const deleteButton = productElement.querySelector('.delete-btn');
 
@@ -518,7 +437,7 @@ document.addEventListener('DOMContentLoaded', () => {
                     }
                 }
 
-                editModal.style.display = 'none'; // Sembunyikan modal edit
+                editModal.style.display = 'none';
                 console.log('Produk berhasil diupdate');
             } else {
                 console.error('Gagal mengupdate produk:', await response.text());
@@ -528,19 +447,17 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     }
 
-    // Fungsi untuk memperbarui daftar produk
     function refreshProductList() {
-        productList.innerHTML = ''; // Kosongkan daftar produk
+        productList.innerHTML = '';
         fetch('/api/products')
             .then(response => response.json())
             .then(products => {
                 products.forEach(product => {
-                    addProductToDOM(product); // Tambahkan produk ke DOM
+                    addProductToDOM(product);
                 });
             });
     }
 
-    // Fungsi untuk mencari produk
     function searchProducts(keyword) {
         const products = productList.children;
         keyword = keyword.toLowerCase();
@@ -550,32 +467,29 @@ document.addEventListener('DOMContentLoaded', () => {
             const productName = product.querySelector('.product-name').textContent.toLowerCase();
 
             if (productName.includes(keyword)) {
-                product.style.display = 'flex'; // Tampilkan produk yang cocok
+                product.style.display = 'flex';
             } else {
-                product.style.display = 'none'; // Sembunyikan produk yang tidak cocok
+                product.style.display = 'none';
             }
         }
     }
 
-    // Event listener untuk tombol search
     searchButton.addEventListener('click', () => {
         const keyword = searchInput.value;
         searchProducts(keyword);
     });
 
-    // Event listener untuk input search (live search)
     searchInput.addEventListener('input', (e) => {
         const keyword = e.target.value;
         searchProducts(keyword);
     });
 
-    // Event listener untuk tombol reset
     resetSearch.addEventListener('click', () => {
-        searchInput.value = ''; // Kosongkan input
+        searchInput.value = '';
         const products = productList.children;
 
         for (let i = 0; i < products.length; i++) {
-            products[i].style.display = 'flex'; // Tampilkan semua produk
+            products[i].style.display = 'flex';
         }
     });
 });
