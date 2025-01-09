@@ -15,9 +15,9 @@ app.use(express.static('public')); // File statis bisa diakses tanpa proteksi
 
 // Konfigurasi Cloudinary
 cloudinary.config({
-  cloud_name: 'your_cloud_name', // Ganti dengan cloud name Anda
-  api_key: 'your_api_key',      // Ganti dengan API key Anda
-  api_secret: 'your_api_secret' // Ganti dengan API secret Anda
+  cloud_name: 'dkfue0nxr', // Ganti dengan cloud name Anda
+  api_key: '616948257564696',      // Ganti dengan API key Anda
+  api_secret: '4J0PUP4V38r-z_7XWMbVxlwcnQY' // Ganti dengan API secret Anda
 });
 
 // Konfigurasi multer untuk upload file sementara
