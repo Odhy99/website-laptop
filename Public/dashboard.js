@@ -198,89 +198,64 @@ document.addEventListener('DOMContentLoaded', () => {
         });
 
     // Add new product
-    productForm.addEventListener('submit', async (e) => {
-        e.preventDefault();
+ document.getElementById('productForm').addEventListener('submit', async (e) => {
+    e.preventDefault();
 
-        // Ambil data dari form
-        const productName = document.getElementById('productName').value;
-        const productImage = document.getElementById('productImage').files[0]; // File gambar utama
-        const productSpecs = document.getElementById('productSpecs').value;
-        const productPrice = document.getElementById('productPrice').value;
-        const productStatus = document.getElementById('productStatus').value;
-        const productDescription = document.getElementById('productDescription').value;
-        const additionalImages = document.getElementById('additionalImages').files; // File gambar tambahan
+    // Ambil data dari form
+    const formData = new FormData(e.target);
+    const productData = {
+        nama: formData.get('nama'),
+        harga: formData.get('harga'),
+        spesifikasi: formData.get('spesifikasi'),
+        status: formData.get('status'),
+        deskripsi: formData.get('deskripsi'),
+    };
 
-        // Validasi: Pastikan semua field yang diperlukan sudah diisi
-        if (!productName || !productSpecs || !productPrice || !productStatus || !productDescription) {
-            alert('Harap isi semua field yang diperlukan!');
-            return;
+    // Ambil file gambar utama
+    const imageFile = formData.get('gambar');
+
+    try {
+        // Upload gambar utama ke Cloudinary
+        const imageUrl = await uploadImage(imageFile);
+
+        // Tambahkan URL gambar utama ke data produk
+        productData.gambar = imageUrl;
+
+        // Ambil file gambar tambahan (jika ada)
+        const additionalImages = formData.getAll('gambarTambahan');
+        const additionalImageUrls = [];
+        for (let i = 0; i < additionalImages.length; i++) {
+            const url = await uploadImage(additionalImages[i]);
+            additionalImageUrls.push(url);
         }
 
-        // Validasi: Pastikan gambar utama diupload
-        if (!productImage) {
-            alert('Harap upload gambar utama!');
-            return;
+        // Tambahkan URL gambar tambahan ke data produk
+        productData.gambarTambahan = additionalImageUrls;
+
+        // Kirim data produk ke backend
+        const response = await fetch('/api/products', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${localStorage.getItem('token')}`,
+            },
+            body: JSON.stringify(productData),
+        });
+
+        if (response.ok) {
+            const product = await response.json();
+            addProductToDOM(product); // Tambahkan produk ke DOM
+            e.target.reset(); // Reset form
+        } else {
+            const errorData = await response.json();
+            alert(`Gagal menambahkan produk: ${errorData.error || 'Terjadi kesalahan'}`);
         }
-
-        // Upload gambar utama dan gambar tambahan ke Cloudinary
-        try {
-            // Upload gambar utama
-            const mainImageUrl = await uploadImage(productImage);
-
-            // Upload gambar tambahan (jika ada)
-            const additionalImageUrls = [];
-            for (let i = 0; i < additionalImages.length; i++) {
-                const url = await uploadImage(additionalImages[i]);
-                additionalImageUrls.push(url);
-            }
-
-            // Buat objek produk baru
-            const newProduct = {
-                id: Date.now().toString(),
-                nama: productName,
-                gambar: mainImageUrl, // URL gambar utama dari Cloudinary
-                spesifikasi: productSpecs,
-                harga: productPrice,
-                status: productStatus,
-                deskripsi: productDescription,
-                gambarTambahan: additionalImageUrls, // Array URL gambar tambahan dari Cloudinary
-            };
-
-            // Ambil token dari localStorage
-            const token = localStorage.getItem('token');
-
-            if (!token) {
-                alert('Anda belum login. Silakan login terlebih dahulu.');
-                window.location.href = '/login.html'; // Redirect ke halaman login
-                return;
-            }
-
-            // Kirim data produk ke backend
-            const response = await fetch('/api/products', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                    'Authorization': `Bearer ${token}` // Sertakan token di header
-                },
-                body: JSON.stringify(newProduct),
-            });
-
-            if (response.ok) {
-                const product = await response.json();
-                addProductToDOM(product);
-                productForm.reset();
-                productModal.style.display = 'none';
-            } else {
-                const errorData = await response.json();
-                alert(`Gagal menambahkan produk: ${errorData.error || 'Terjadi kesalahan'}`);
-                console.error('Detail error:', errorData); // Log error untuk debugging
-            }
-        } catch (error) {
-            console.error('Error:', error);
-            alert('Terjadi kesalahan saat mengupload gambar atau menambahkan produk.');
-        }
-    });
-
+    } catch (error) {
+        console.error('Error:', error);
+        alert('Terjadi kesalahan saat menambahkan produk.');
+    }
+});
+    
     // Fungsi untuk upload gambar ke Cloudinary
     async function uploadImage(file) {
         const formData = new FormData();
