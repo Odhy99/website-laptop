@@ -21,7 +21,7 @@ cloudinary.config({
 });
 
 // Konfigurasi multer untuk upload file sementara
-const upload = multer({ dest: 'temp/' }); // File sementara disimpan di folder 'temp'
+const upload = multer({ storage: multer.memoryStorage() }); // Simpan file di memori, bukan di disk
 
 // Data pengguna (sementara, bisa diganti dengan database)
 const users = [
@@ -69,19 +69,20 @@ app.post('/api/upload', upload.single('image'), async (req, res) => {
     }
 
     try {
-        // Upload file ke Cloudinary
-        const result = await cloudinary.uploader.upload(req.file.path, {
-            folder: 'laptop-products' // Folder di Cloudinary untuk menyimpan gambar
-        });
-
-        // Hapus file sementara setelah diunggah ke Cloudinary
-        const fs = require('fs');
-        fs.unlinkSync(req.file.path);
-
-        // Kirim URL gambar dari Cloudinary
-        res.json({ url: result.secure_url });
+        // Upload file ke Cloudinary langsung dari buffer
+        const result = await cloudinary.uploader.upload_stream(
+            { folder: 'laptop-products' }, // Folder di Cloudinary
+            (error, result) => {
+                if (error) {
+                    console.error('Error uploading image:', error);
+                    return res.status(500).json({ error: 'Gagal mengunggah gambar' });
+                }
+                // Kirim URL gambar dari Cloudinary
+                res.json({ url: result.secure_url });
+            }
+        ).end(req.file.buffer); // Gunakan buffer dari file yang diupload
     } catch (error) {
-        console.error('Error uploading image:', error);
+        console.error('Error:', error);
         res.status(500).json({ error: 'Gagal mengunggah gambar' });
     }
 });
