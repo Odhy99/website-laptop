@@ -88,6 +88,12 @@ app.post('/api/upload', upload.single('image'), async (req, res) => {
 
     // Upload gambar ke Cloudinary
     const result = await cloudinary.uploader.upload(req.file.path);
+    console.log('Cloudinary upload result:', result);
+
+    // Hapus file sementara dari folder uploads
+    fs.unlinkSync(req.file.path);
+
+    // Kirim URL gambar ke frontend
     res.json({ url: result.secure_url });
   } catch (error) {
     console.error('Error uploading to Cloudinary:', error);
@@ -120,6 +126,9 @@ app.post('/api/products', authenticateToken, upload.single('image'), async (req,
     const result = await cloudinary.uploader.upload(req.file.path);
     const imageUrl = result.secure_url;
 
+    // Hapus file sementara dari folder uploads
+    fs.unlinkSync(req.file.path);
+
     // Buat produk baru
     const newProduct = {
       id: Date.now().toString(), // ID unik
@@ -151,101 +160,6 @@ app.delete('/api/products/:id', authenticateToken, (req, res) => {
   } else {
     res.status(404).json({ error: 'Produk tidak ditemukan' });
   }
-});
-
-// Update a product with file upload (memerlukan autentikasi)
-app.put('/api/products/:id', authenticateToken, upload.fields([
-  { name: 'gambar', maxCount: 1 }, // Field untuk foto utama (maksimal 1 file)
-  { name: 'gambarTambahan', maxCount: 10 } // Field untuk foto tambahan (maksimal 10 file)
-]), async (req, res) => {
-  const productId = req.params.id;
-
-  // Cari produk yang akan diupdate
-  const productIndex = products.findIndex(product => product.id === productId);
-
-  if (productIndex !== -1) {
-    const updatedProduct = req.body;
-    const product = products[productIndex];
-
-    // Jika ada file gambar utama yang diupload
-    if (req.files['gambar']) {
-      // Upload gambar utama baru ke Cloudinary
-      const result = await cloudinary.uploader.upload(req.files['gambar'][0].path);
-      updatedProduct.gambar = result.secure_url; // Update URL gambar utama
-    }
-
-    // Jika ada file gambar tambahan yang diupload
-    if (req.files['gambarTambahan']) {
-      const gambarTambahanUrls = await Promise.all(
-        req.files['gambarTambahan'].map(async (file) => {
-          const result = await cloudinary.uploader.upload(file.path);
-          return result.secure_url;
-        })
-      );
-      updatedProduct.gambarTambahan = gambarTambahanUrls; // Update URL gambar tambahan
-    }
-
-    // Update data produk
-    products[productIndex] = { ...products[productIndex], ...updatedProduct };
-    res.json(products[productIndex]); // Kirim respons dengan data produk yang sudah diupdate
-  } else {
-    res.status(404).json({ error: 'Produk tidak ditemukan' });
-  }
-});
-
-let banners = []; // Deklarasi variabel banners
-
-// Get all banners (tidak memerlukan autentikasi)
-app.get('/api/banners', (req, res) => {
-  res.json(banners);
-});
-
-// Add a new banner (memerlukan autentikasi)
-app.post('/api/banners', authenticateToken, upload.single('image'), async (req, res) => {
-  const { link } = req.body;
-
-  try {
-    if (!req.file) {
-      return res.status(400).json({ error: 'Tidak ada file yang diupload' });
-    }
-
-    // Upload gambar ke Cloudinary
-    const result = await cloudinary.uploader.upload(req.file.path);
-    const imageUrl = result.secure_url;
-
-    const newBanner = {
-      id: Date.now().toString(), // ID unik
-      image: imageUrl,
-      link: link,
-    };
-
-    banners.push(newBanner);
-    res.status(201).json(newBanner);
-  } catch (error) {
-    console.error('Error:', error);
-    res.status(500).json({ error: 'Gagal menambahkan banner' });
-  }
-});
-
-// Delete a banner (memerlukan autentikasi)
-app.delete('/api/banners/:id', authenticateToken, (req, res) => {
-  const bannerId = req.params.id;
-
-  // Cari banner yang akan dihapus
-  const bannerIndex = banners.findIndex(banner => banner.id === bannerId);
-
-  if (bannerIndex !== -1) {
-    // Hapus banner dari array
-    banners.splice(bannerIndex, 1);
-    res.status(204).send(); // Kirim respons sukses
-  } else {
-    res.status(404).json({ error: 'Banner tidak ditemukan' });
-  }
-});
-
-// Proteksi halaman dashboard
-app.get('/dashboard.html', authenticateToken, (req, res) => {
-  res.sendFile(path.join(__dirname, 'Public', 'dashboard.html'));
 });
 
 // Jalankan server
